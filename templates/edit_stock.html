@@ -1,0 +1,169 @@
+{% extends 'dashboard_base.html' %}
+
+{% block admin_content %}
+<div class="max-w-5xl mx-auto bg-white p-10 rounded-[40px] shadow-2xl border border-gray-100 animate-fade-in">
+    <div class="flex justify-between items-center mb-8 border-b pb-6">
+        <h1 class="text-4xl font-serif text-onyx">✎ Edit <span class="text-gold italic">{{ product.name }}</span></h1>
+        <a href="{% url 'dashboard_home' %}" class="text-sm text-gray-400 hover:text-onyx transition">Cancel & Go Back</a>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {% csrf_token %}
+        
+        <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Product Name</label>
+            <input type="text" name="name" value="{{ product.name }}" required class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Metal Type</label>
+            <select name="metal_type" id="metal_type" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                <option value="gold" {% if product.metal_type == 'gold' %}selected{% endif %}>Gold</option>
+                <option value="silver" {% if product.metal_type == 'silver' %}selected{% endif %}>Silver</option>
+                <option value="platinum" {% if product.metal_type == 'platinum' %}selected{% endif %}>Platinum</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Purity</label>
+            <select name="purity" id="purity" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                <option value="24k" {% if product.purity == '24k' %}selected{% endif %}>24K</option>
+                <option value="22k" {% if product.purity == '22k' %}selected{% endif %}>22K</option>
+                <option value="18k" {% if product.purity == '18k' %}selected{% endif %}>18K</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Main Category</label>
+            <select id="main_cat" name="category" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all" onchange="updateSubCat()">
+                <option value="head" {% if product.category == 'head' %}selected{% endif %}>Head & Hair Jewellery</option>
+                <option value="ear" {% if product.category == 'ear' %}selected{% endif %}>Ear Jewellery</option>
+                <option value="nose" {% if product.category == 'nose' %}selected{% endif %}>Nose Jewellery</option>
+                <option value="neck" {% if product.category == 'neck' %}selected{% endif %}>Neck & Chest Jewellery</option>
+                <option value="hand" {% if product.category == 'hand' %}selected{% endif %}>Hand & Arm Jewellery</option>
+                <option value="waist" {% if product.category == 'waist' %}selected{% endif %}>Waist Jewellery</option>
+                <option value="leg" {% if product.category == 'leg' %}selected{% endif %}>Leg & Feet Jewellery</option>
+                <option value="men" {% if product.category == 'men' %}selected{% endif %}>Men's Gold Jewellery</option>
+                <option value="traditional" {% if product.category == 'traditional' %}selected{% endif %}>Traditional Styles</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Sub Category</label>
+            <select id="sub_cat" name="sub_category" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Net Weight (g)</label>
+            <input type="number" step="0.001" id="net_wt" name="net_weight" value="{{ product.net_weight|floatformat:3 }}" oninput="calcTotal()" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold">
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Other Weight (Stone/Enamel) (g)</label>
+            <input type="number" step="0.001" id="other_wt" name="other_weight" value="{{ product.stone_weight|floatformat:3 }}" oninput="calcTotal()" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold">
+        </div>
+
+        <div class="md:col-span-1 bg-onyx/5 p-5 rounded-2xl border-2 border-dashed border-gold/30">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Live Gross Weight</label>
+            <span id="total_wt" class="text-3xl font-serif text-onyx">{{ product.gross_weight|floatformat:3 }}</span> <span class="text-sm text-gray-500">g</span>
+        </div>
+
+        <div id="huid_section" class="{% if not product.huid %}hidden{% endif %}">
+            <label class="block text-xs font-bold text-yellow-700 uppercase mb-2 tracking-widest">⭐ HUID Number</label>
+            <input type="text" name="huid" value="{{ product.huid }}" class="w-full p-4 border-2 border-yellow-200 rounded-2xl bg-yellow-50 outline-none focus:border-yellow-400 transition-all">
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Making Charges (₹)</label>
+            <input type="number" name="making_charges" value="{{ product.making_charges }}" class="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold">
+        </div>
+        
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2">Other Charges (₹)</label>
+            <input type="number" step="0.01" name="other_charges" value="{{ product.other_charges|default:0 }}" 
+           class="w-full bg-gray-50 border border-gray-100 p-4 rounded-xl outline-none focus:border-gold">
+        </div>
+
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2">Discount (%)</label>
+            <input type="number" name="discount" value="{{ product.discount|default:0 }}" 
+           class="w-full bg-gray-50 border border-gray-100 p-4 rounded-xl outline-none focus:border-gold text-red-500 font-bold">
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Change Image (Optional)</label>
+            <input type="file" name="image" accept="image/*" class="w-full p-3 border-2 border-dashed border-gray-100 rounded-2xl text-sm">
+            <p class="mt-2 text-[10px] text-gray-400 italic">Current: {{ product.image.name|truncatechars:30 }}</p>
+        </div>
+
+        <button type="submit" class="md:col-span-2 bg-[#1A1A1A] text-white py-5 rounded-[20px] text-lg font-serif hover:bg-gold transition-all shadow-xl tracking-[0.1em] uppercase">
+            Update Inventory Item
+        </button>
+    </form>
+</div>
+
+<script>
+const data = {
+    'head': ['Maang Tikka', 'Matha Patti', 'Passa / Jhoomar', 'Gold Hair Chain', 'Ornamental Gold Hair Pin'],
+    'ear': ['Gold Studs', 'Gold Earrings', 'Gold Jhumka', 'Gold Bali (Hoop)', 'Chandbali', 'Karn Phool', 'Ear Cuff', 'Ear Chain'],
+    'nose': ['Gold Nose Pin', 'Gold Nose Ring (Nath)', 'Gold Septum Ring'],
+    'neck': ['Gold Necklace', 'Gold Chain', 'Gold Choker', 'Gold Pendant', 'Gold Locket', 'Gold Mangalsutra', 'Haar', 'Rani Haar', 'Gold Mala', 'Navratna / Satlada Haar'],
+    'hand': ['Gold Ring', 'Gold Bangles', 'Gold Bracelet', 'Gold Kada', 'Gold Cuff Bracelet', 'Haath Phool', 'Gold Armlet'],
+    'waist': ['Gold Waist Chain (Kamarbandh)', 'Oddiyanam'],
+    'leg': ['Gold Anklet (Payal)', 'Gold Pajeb', 'Gold Toe Ring'],
+    'men': ['Gold Chain', 'Gold Coin Chain', 'Gold Finger Ring', 'Gold Kada', 'Gold Bracelet', 'Gold ID Bracelet', 'Gold Brooch', 'Gold Tie Pin'],
+    'traditional': ['Kundan Jewellery', 'Polki Jewellery', 'Meenakari Jewellery', 'Temple Jewellery', 'Navratna Jewellery']
+};
+
+function updateSubCat() {
+    const main = document.getElementById('main_cat').value;
+    const sub = document.getElementById('sub_cat');
+    const currentSub = "{{ product.sub_category }}"; // Purani value
+    sub.innerHTML = '';
+    if (data[main]) {
+        data[main].forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item;
+            opt.innerHTML = item;
+            if(item === currentSub) opt.selected = true;
+            sub.appendChild(opt);
+        });
+    }
+}
+
+// Initial call to set sub-category on page load
+updateSubCat();
+
+function calcTotal() {
+    const net = parseFloat(document.getElementById('net_wt').value) || 0;
+    const other = parseFloat(document.getElementById('other_wt').value) || 0;
+    document.getElementById('total_wt').innerHTML = (net + other).toFixed(3);
+}
+
+const metalType = document.getElementById('metal_type');
+const purity = document.getElementById('purity');
+const huidSection = document.getElementById('huid_section');
+
+[metalType, purity].forEach(el => el.addEventListener('change', () => {
+    if(metalType.value === 'gold' && purity.value === '22k') {
+        huidSection.classList.remove('hidden');
+    } else {
+        huidSection.classList.add('hidden');
+    }
+}));
+</script>
+<script>
+    // Saare number inputs dhoondo
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+
+    numberInputs.forEach(function(input) {
+        input.addEventListener('keydown', function(e) {
+            // Agar key 'e', 'E', '+' ya '-' hai, toh usse roko
+            if (['e', 'E', '+', '-'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

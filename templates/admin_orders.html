@@ -1,0 +1,97 @@
+{% extends 'dashboard_base.html' %} {% block admin_content %} <div class="pb-20 max-w-7xl mx-auto min-h-screen">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h1 class="text-4xl font-serif text-onyx">Order Management</h1>
+            <p class="text-xs text-gray-400 mt-2 uppercase tracking-widest">Rojesara Heritage - Admin Control</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50/50 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">
+                    <th class="p-6">Order Details</th>
+                    <th class="p-6">Customer</th>
+                    <th class="p-6">Total Amount</th>
+                    <th class="p-6">Status</th>
+                    <th class="p-6 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for order in orders %}
+                <tr class="hover:bg-gray-50/30 transition-colors">
+                    <td class="p-6">
+                        <span class="font-mono text-xs font-bold text-onyx">#{{ order.order_id }}</span>
+                        <p class="text-[10px] text-gray-400">{{ order.order_date|date:"M d, Y | H:i" }}</p>
+                    </td>
+                    <td class="p-6">
+                        <p class="text-sm font-bold text-onyx">{{ order.full_name }}</p>
+                        <p class="text-[10px] text-gray-500">{{ order.phone }}</p>
+                    </td>
+                    <td class="p-6">
+                        <p class="text-sm font-bold text-gold">₹{{ order.total_amount }}</p>
+                        <p class="text-[9px] text-gray-400 uppercase tracking-tighter">{{ order.payment_method }}</p>
+                    </td>
+                    <td class="p-6">
+                        <form method="POST" action="{% url 'update_order_status' order.order_id %}">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()" 
+                                class="bg-gray-100 border-none text-[10px] font-bold py-2 px-3 rounded-full outline-none focus:ring-1 focus:ring-gold cursor-pointer">
+                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="p-6 text-center">
+                        <button onclick="openOrderModal('{{ order.order_id }}')" class="text-gold hover:underline font-bold">
+                        Details
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="orderModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeOrderModal()"></div>
+        
+        <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl z-10 overflow-hidden transform transition-all">
+            <div class="bg-onyx p-6 text-white flex justify-between items-center">
+                <h3 class="text-xl font-serif">Order Specification</h3>
+                <button onclick="closeOrderModal()" class="text-white/50 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div id="modalBody" class="p-8">
+                <div class="flex justify-center py-10">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-gold"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openOrderModal(orderId) {
+    const modal = document.getElementById('orderModal');
+    const modalBody = document.getElementById('modalBody');
+    modal.classList.remove('hidden');
+    
+    // AJAX call se data mangwana
+    fetch(`/dashboard/get-order-details/${orderId}/`)
+        .then(response => response.text())
+        .then(data => {
+            modalBody.innerHTML = data;
+        });
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').classList.add('hidden');
+}
+</script>
+
+{% endblock %}

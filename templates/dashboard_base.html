@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <title>Elite Admin | Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, .font-serif { font-family: 'Cormorant Garamond', serif; }
+</style>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-[#1A1A1A] text-[#FDFCFB] flex flex-col shadow-xl">
+        <div class="p-6 text-2xl font-serif border-b border-gray-800 text-[#D4AF37]">Elite Admin</div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="{% url 'stock_analysis' %}" class="block p-3 rounded-xl hover:bg-gray-800 transition flex items-center gap-3">
+                <span>📊</span> Stock Analysis
+            </a>
+            <a href="{% url 'dashboard_home' %}" class="block p-3 rounded-xl bg-gray-800 text-[#D4AF37] transition flex items-center gap-3">
+                <span>📦</span> Inventory (Stock)
+            </a>
+            <a href="{% url 'stock_alerts' %}" class="block p-3 rounded-xl hover:bg-gray-800 transition flex items-center gap-3">
+                <span>⚠️</span> Stock Alerts
+            </a>
+
+            <a href="{% url 'manage_orders' %}" class="flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-gold hover:text-white transition-all duration-300 rounded-2xl group mb-2">
+                <div class="p-2 bg-gray-100 rounded-lg group-hover:bg-white/20 transition-colors">
+                    <span class="text-xl">🛍️</span>
+                </div>
+                <span class="font-bold text-xs uppercase tracking-[0.15em]">Manage Orders</span>
+                <div class="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            </a>
+
+            {% if request.user.is_superuser %}
+                <a href="{% url 'create_admin' %}" class="block p-3 rounded-xl hover:bg-gray-800 transition flex items-center gap-3">
+                    <span>👤</span> Create Admin
+                </a>
+
+                <a href="{% url 'set_rates' %}" class="flex items-center gap-4 px-6 py-4 text-gray-500 hover:bg-gold hover:text-white transition-all duration-300 rounded-2xl group mb-2">
+                    <div class="p-2 bg-gray-100 rounded-lg group-hover:bg-white/20 transition-colors">
+                        <span class="text-xl">📉</span>
+                    </div>
+                    <span class="font-bold text-xs uppercase tracking-[0.15em]">Set Daily Rates</span>
+                </a>
+                
+                <a href="{% url 'sales_analytics' %}" class="block p-3 rounded-xl hover:bg-gray-800 transition flex items-center gap-3">
+                    <span>📈</span> Sales Analytics
+                </a>
+            {% endif %}
+
+            <div class="pt-4 mt-4 border-t border-gray-800">
+                <a href="{% url 'home' %}" class="block p-3 rounded-xl bg-gold text-onyx font-bold transition flex items-center gap-3 hover:bg-white">
+                    <span>🏠</span> Back to Website
+                </a>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <a href="/" class="text-sm text-gray-400 hover:text-white transition">← Back to Site</a>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-8 bg-[#F9F7F5]">
+        {% block admin_content %}{% endblock %}
+    </main>
+</body>
+</html>

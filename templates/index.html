@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="filterDrawer" class="fixed inset-0 z-[100] invisible">
+    <div onclick="toggleFilterDrawer()" class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 opacity-0" id="filterOverlay"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl transition-transform duration-500 translate-x-full z-[101]" id="filterPanel">
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-10 border-b pb-4">
+                <h2 class="text-2xl font-serif text-onyx">Refine Collection</h2>
+                <button onclick="toggleFilterDrawer()" class="text-gray-400 hover:text-onyx transition-colors text-xl">✕</button>
+            </div>
+
+            <form method="GET" action="{% url 'home' %}" class="space-y-8">
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-gray-400 tracking-widest block mb-4">Metal Choice</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="metal" value="gold" class="hidden peer" {% if request.GET.metal == 'gold' %}checked{% endif %}>
+                            <div class="border border-gray-100 p-3 text-center text-[10px] uppercase tracking-widest peer-checked:border-gold peer-checked:text-gold peer-checked:bg-gold/5 rounded-xl transition">Gold</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="metal" value="silver" class="hidden peer" {% if request.GET.metal == 'silver' %}checked{% endif %}>
+                            <div class="border border-gray-100 p-3 text-center text-[10px] uppercase tracking-widest peer-checked:border-gold peer-checked:text-gold peer-checked:bg-gold/5 rounded-xl transition">Silver</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-gray-400 tracking-widest block mb-4">Net Weight (Grams)</label>
+                    <div class="flex items-center gap-4">
+                        <input type="number" name="min_weight" value="{{ request.GET.min_weight }}" placeholder="Min" class="w-full bg-gray-50 border-none p-4 rounded-xl text-sm outline-none focus:ring-1 focus:ring-gold">
+                        <span class="text-gray-300">to</span>
+                        <input type="number" name="max_weight" value="{{ request.GET.max_weight }}" placeholder="Max" class="w-full bg-gray-50 border-none p-4 rounded-xl text-sm outline-none focus:ring-1 focus:ring-gold">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-onyx text-white py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-gold transition-all shadow-xl">
+                    Apply Filters
+                </button>
+                
+                <a href="{% url 'home' %}" class="block text-center text-[10px] uppercase text-gray-400 underline tracking-widest pt-2">Clear All</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="min-h-screen bg-[#FDFCFB]">
+    
+    <section class="relative h-[85vh] w-full overflow-hidden">
+        <div class="swiper heroSwiper h-full w-full">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide relative">
+                    <img src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?q=80&w=2070" 
+                         class="w-full h-full object-cover" alt="Heritage">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-[#FDFCFB]/40 flex items-center justify-center text-center">
+                        <div class="max-w-4xl px-4 animate-fade-in-up">
+                            <span class="text-white tracking-[0.4em] text-[10px] uppercase font-bold mb-6 block drop-shadow-md">
+                                The Heritage Collection 2026
+                            </span>
+                            <h1 class="text-6xl md:text-8xl font-serif text-white mb-8 leading-tight drop-shadow-lg">
+                                Crafting <span class="italic">Legacy</span>
+                            </h1>
+                            <p class="text-white/90 text-lg font-light tracking-wide max-w-xl mx-auto mb-10 leading-relaxed drop-shadow-md">
+                                Experience the intersection of tradition and modern elegance with our handcrafted gold masterpieces.
+                            </p>
+                            <a href="#collection" class="px-10 py-4 bg-white text-[#1A1A1A] text-[11px] tracking-[0.3em] uppercase hover:bg-gold hover:text-white transition-all duration-500 shadow-2xl">
+                                Explore Collection
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper-slide relative">
+                    <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?q=80&w=2070" 
+                         class="w-full h-full object-cover" alt="Bridal">
+                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-center">
+                        <div class="max-w-4xl px-4">
+                            <span class="text-gold tracking-[0.4em] text-[10px] uppercase font-bold mb-6 block">
+                                Eternal Unions
+                            </span>
+                            <h2 class="text-6xl md:text-8xl font-serif text-white mb-8 leading-tight">
+                                Bridal <span class="italic text-gold">Masterpieces</span>
+                            </h2>
+                            <p class="text-white/80 text-lg font-light tracking-wide max-w-xl mx-auto mb-10 leading-relaxed">
+                                Every piece tells a story of love, crafted with 22K purity and timeless devotion.
+                            </p>
+                            <a href="#traditional-collection" class="px-10 py-4 border border-white text-white text-[11px] tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all duration-500">
+                                View Bridal Wear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <div class="bg-white py-16 border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-10">
+                <h4 class="text-[10px] uppercase tracking-[0.4em] text-gold font-bold mb-2">Explore by Category</h4>
+                <h2 class="text-3xl font-serif text-onyx">Curated Collections</h2>
+            </div>
+
+            <div class="flex overflow-x-auto pb-6 gap-8 no-scrollbar justify-start lg:justify-center">
+                <a href="?category=neck" class="flex flex-col items-center gap-4 group min-w-[120px] transition-all">
+                    <div class="w-24 h-24 rounded-full border border-gray-100 p-1 group-hover:border-gold transition-all duration-700 bg-white shadow-sm group-hover:shadow-xl group-hover:-translate-y-2">
+                        <img src="https://goldpalace.com/cdn/shop/products/4601084-1_large.jpg?v=1698061947" class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <span class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 group-hover:text-onyx">Necklaces</span>
+                </a>
+
+                <a href="?category=hand" class="flex flex-col items-center gap-4 group min-w-[120px] transition-all">
+                    <div class="w-24 h-24 rounded-full border border-gray-100 p-1 group-hover:border-gold transition-all duration-700 bg-white shadow-sm group-hover:shadow-xl group-hover:-translate-y-2">
+                        <img src="https://www.candere.com/media/jewellery/images/C014426__3.jpeg" class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <span class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 group-hover:text-onyx">Rings</span>
+                </a>
+
+                <a href="?category=ear" class="flex flex-col items-center gap-4 group min-w-[120px] transition-all">
+                    <div class="w-24 h-24 rounded-full border border-gray-100 p-1 group-hover:border-gold transition-all duration-700 bg-white shadow-sm group-hover:shadow-xl group-hover:-translate-y-2">
+                        <img src="https://n3.sdlcdn.com/imgs/a/x/e/Aneha-Gold-Party-Wear-Earrings-SDL509457782-1-b2372.jpg" class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <span class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 group-hover:text-onyx">Earrings</span>
+                </a>
+
+                <a href="?category=men" class="flex flex-col items-center gap-4 group min-w-[120px] transition-all">
+                    <div class="w-24 h-24 rounded-full border border-gray-100 p-1 group-hover:border-gold transition-all duration-700 bg-white shadow-sm group-hover:shadow-xl group-hover:-translate-y-2">
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.fFi1JE4j-sgJRsgThYG84AHaHa?cb=defcache2&defcache=1&w=1150&h=1150&rs=1&pid=ImgDetMain&o=7&rm=3" class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <span class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 group-hover:text-onyx">Men's Collection</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <section id="traditional-collection" class="relative py-24 bg-[#FAF9F6] overflow-hidden scroll-mt-20">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16">
+            <div class="w-full lg:w-1/2 relative group animate-fade-in">
+                <div class="relative z-10 overflow-hidden rounded-2xl shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=800" class="w-full h-[600px] object-cover transition-transform duration-[2000ms] group-hover:scale-110">
+                </div>
+                <div class="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-gold z-0"></div>
+                <div class="absolute -bottom-6 -right-6 w-32 h-32 border-r-2 border-b-2 border-gold z-0"></div>
+            </div>
+
+            <div class="w-full lg:w-1/2 text-left space-y-8">
+                <div class="inline-block px-4 py-1 bg-gold/10 text-gold text-[10px] font-bold uppercase tracking-[0.4em] rounded-full">
+                    February Exclusive
+                </div>
+                <h2 class="text-6xl font-serif text-onyx leading-tight">The Heritage <br> <span class="italic font-light">Bridal Collection</span></h2>
+                <p class="text-gray-500 font-light leading-relaxed text-lg max-w-lg">
+                    Experience the timeless craftsmanship of Rojesara’s finest. Each piece is hand-carved with 22K pure gold, designed to tell a story of elegance and tradition that lasts for generations.
+                </p>
+                <div class="pt-6">
+                    <a href="?category=traditional" class="group relative inline-flex items-center gap-4 text-xs font-bold uppercase tracking-[0.3em] text-onyx">
+                        Explore This Collection
+                        <span class="w-12 h-[1px] bg-gold transition-all duration-500 group-hover:w-20"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="collection" class="max-w-7xl mx-auto px-6 py-20">
+        
+        {% if not sections %}
+        <div class="text-center py-20">
+            <h2 class="text-3xl font-serif text-gray-300">Bhai, koi product nahi mila...</h2>
+            <a href="{% url 'home' %}" class="mt-6 inline-block px-8 py-3 bg-gold text-white text-[10px] uppercase tracking-widest rounded-full transition-all hover:bg-onyx">Clear Filters</a>
+        </div>
+        {% endif %}
+
+        {% for section in sections %}
+        <div class="mb-24 relative">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-serif text-onyx">{{ section.info.name }}</h2>
+                    <div class="h-[2px] w-12 bg-gold mt-3"></div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="scrollSlider('slider-{{ section.info.id }}', -1)" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gold hover:text-white transition-all shadow-sm">←</button>
+                    <a href="?category={{ section.info.id }}" class="px-5 py-2.5 border border-onyx text-[9px] font-bold uppercase tracking-widest rounded-full hover:bg-onyx hover:text-white transition-all">View All</a>
+                    <button onclick="scrollSlider('slider-{{ section.info.id }}', 1)" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gold hover:text-white transition-all shadow-sm">→</button>
+                </div>
+            </div>
+
+            <div id="slider-{{ section.info.id }}" class="flex gap-6 overflow-x-auto scroll-smooth pb-8 no-scrollbar snap-x snap-mandatory">
+                {% for product in section.products %}
+                <div class="min-w-[calc(100%-1rem)] md:min-w-[calc(25%-1.2rem)] max-w-[calc(100%-1rem)] md:max-w-[calc(25%-1.2rem)] bg-white rounded-[32px] border border-gray-50 shadow-sm flex-shrink-0 group snap-center">
+                    
+                    <div class="relative aspect-[4/5] overflow-hidden m-3 rounded-[24px] bg-[#FAF9F6]">
+                        <img src="{{ product.image.url }}" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110">
+                        <div class="absolute top-3 left-3 backdrop-blur-md bg-white/70 px-3 py-1.5 rounded-xl border border-white/50">
+                            <p class="text-[8px] font-mono text-gray-800">{{ product.sku }}</p>
+                        </div>
+                        
+                        {% if product.price_details.has_discount %}
+                        <div class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-lg text-[8px] font-bold uppercase tracking-wider shadow-sm">
+                            {{ product.price_details.discount_percent }}% OFF
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-5 text-center">
+                        <p class="text-[9px] text-gold uppercase tracking-[0.2em] font-bold mb-1">{{ product.purity }} | {{ product.net_weight }}g</p>
+                        <h3 class="text-base font-serif text-onyx mb-2 truncate px-2">{{ product.name }}</h3>
+                        
+                        <div class="mb-4 flex justify-center items-baseline gap-2">
+                            {% if product.price_details.has_discount %}
+                                <span class="text-xs text-gray-400 line-through decoration-red-500/50">₹{{ product.price_details.original_price }}</span>
+                                <span class="text-sm font-bold text-red-600">₹{{ product.price_details.final_price }}</span>
+                            {% else %}
+                                <span class="text-sm font-bold text-onyx">₹{{ product.price_details.final_price }}</span>
+                            {% endif %}
+                        </div>
+
+                        <a href="{% url 'product_detail' product.slug %}" class="block w-full py-3 bg-[#1A1A1A] text-white text-[9px] uppercase tracking-[0.2em] rounded-xl hover:bg-gold transition-all duration-500">
+                            Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleFilterDrawer() {
+        const drawer = document.getElementById('filterDrawer');
+        const overlay = document.getElementById('filterOverlay');
+        const panel = document.getElementById('filterPanel');
+
+        if (drawer.classList.contains('invisible')) {
+            drawer.classList.remove('invisible');
+            setTimeout(() => {
+                overlay.classList.add('opacity-100');
+                panel.classList.remove('translate-x-full');
+            }, 10);
+        } else {
+            overlay.classList.remove('opacity-100');
+            panel.classList.add('translate-x-full');
+            setTimeout(() => drawer.classList.add('invisible'), 500);
+        }
+    }
+
+    function scrollSlider(id, direction) {
+        const slider = document.getElementById(id);
+        const scrollAmount = slider.clientWidth;
+        slider.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const swiper = new Swiper('.heroSwiper', {
+            loop: true,
+            effect: 'fade',
+            speed: 1500,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
+        });
+    });
+</script>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .swiper-pagination-bullet { background: white !important; opacity: 0.5; }
+    .swiper-pagination-bullet-active { background: #D4AF37 !important; opacity: 1; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in-up { animation: fadeInUp 1.2s ease-out forwards; }
+    /* 🔥 Added smooth scroll margin */
+    .scroll-mt-20 { scroll-margin-top: 5rem; }
+</style>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'dashboard_base.html' %}
+
+{% block admin_content %}
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
+    <h2 class="text-2xl font-serif text-onyx mb-6">📉 Set Today's Market Rates</h2>
+    <p class="text-xs text-gray-400 mb-8">All product prices on the website will update automatically based on these rates.</p>
+
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        
+        {% for rate in rates %}
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <label class="text-sm font-bold uppercase tracking-widest text-gray-600">{{ rate.get_metal_type_display }}</label>
+            <div class="flex items-center gap-2">
+                <span class="text-gold font-serif text-lg">₹</span>
+                <input type="number" step="0.01" name="{{ rate.metal_type }}" value="{{ rate.rate_per_gram }}" 
+                       class="w-32 bg-white border border-gray-200 p-2 rounded-lg text-right font-bold text-onyx outline-none focus:border-gold">
+                <span class="text-xs text-gray-400">/gram</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full bg-gold text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-lg hover:bg-onyx transition-all mt-4">
+            Update All Prices
+        </button>
+    </form>
+</div>
+{% endblock %}

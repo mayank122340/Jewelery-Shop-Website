@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #1A1A1A; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .header { background-color: #000000; padding: 30px; text-align: center; border-bottom: 2px solid #D4AF37; }
+        .logo { color: #D4AF37; font-size: 24px; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; text-decoration: none; }
+        .content { padding: 40px 30px; text-align: center; color: #ffffff; }
+        .otp-box { background-color: #2a2a2a; color: #D4AF37; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 20px; margin: 30px 0; border-radius: 8px; border: 1px dashed #D4AF37; display: inline-block; }
+        .footer { background-color: #000000; padding: 20px; text-align: center; color: #666666; font-size: 12px; }
+        p { line-height: 1.6; color: #cccccc; }
+        .warning { color: #888888; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">ROJESARA ELITE</div>
+        </div>
+        <div class="content">
+            <h2 style="color: #ffffff; margin-top: 0;">Verification Required</h2>
+            <p>Hello,</p>
+            <p>You are one step away from joining the Elite family. Please use the verification code below to complete your registration.</p>
+            
+            <div class="otp-box">
+                {{ otp }}
+            </div>
+            
+            <p class="warning">This code is valid for <strong>2 minutes</strong>.<br>Do not share this code with anyone.</p>
+        </div>
+        <div class="footer">
+            &copy; 2026 Rojesara Elite Jewelry. All rights reserved.<br>
+            Ahmedabad, Gujarat, India.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page { size: A4; margin: 0.5cm; margin-top: 0.5cm; }
+        body { font-family: Helvetica, sans-serif; font-size: 10px; color: #1a1a1a; line-height: 1.3; }
+        
+        /* COLORS */
+        /* Gold: #b8860b, Black: #111 */
+
+        /* LAYOUT */
+        .w-100 { width: 100%; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .uppercase { text-transform: uppercase; }
+        
+        /* HEADER (Black & Gold) */
+        .header-bg { background-color: #111; color: #d4af37; }
+        .brand-name { font-size: 26px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: #d4af37; }
+        .brand-sub { font-size: 9px; color: #eee; margin-top: 5px; }
+        
+        /* Invoice Tag */
+        .invoice-box { border: 1px solid #d4af37; padding: 5px 10px; color: #fff; font-weight: bold; text-transform: uppercase; font-size: 14px; }
+
+        /* SECTIONS */
+        .section-header { font-size: 10px; font-weight: bold; color: #b8860b; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 5px; }
+
+        /* PRODUCT TABLE */
+        table.product-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table.product-table th { 
+            background-color: #b8860b; 
+            color: #fff; 
+            padding: 6px; 
+            font-size: 9px; 
+            text-transform: uppercase; 
+            border: 1px solid #a07200;
+            text-align: left;
+        }
+        table.product-table td { 
+            padding: 6px; 
+            border-bottom: 1px solid #eee; 
+            vertical-align: top;
+            font-size: 9px;
+        }
+        
+        /* TOTALS */
+        .grand-total { background-color: #111; color: #fff; padding: 8px; font-size: 12px; font-weight: bold; }
+
+        /* FOOTER */
+        .footer { text-align: center; margin-top: 30px; border-top: 2px solid #b8860b; padding-top: 10px; font-size: 8px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <table class="w-100 header-bg">
+        <tr>
+            <td width="65%" style="padding: 20px;">
+                <div class="brand-name">Rojesara Heritage</div>
+                <div class="brand-sub">Legacy of Pure Gold & Diamond Jewellery</div>
+                <div style="font-size: 9px; color: #ccc; margin-top: 5px;">
+                    Ahmedabad, Gujarat - 380009 | +91 98765 43210
+                </div>
+            </td>
+            <td width="35%" style="padding: 20px; text-align: right; vertical-align: middle;">
+                <div><span class="invoice-box">Tax Invoice</span></div>
+                <div style="margin-top: 10px; font-size: 10px; color: #d4af37;">#{{ order.order_id }}</div>
+                <div style="color: #fff; font-size: 9px;">Date: {{ invoice_date|date:"d M, Y" }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="w-100" style="margin-top: 20px;">
+        <tr>
+            <td width="55%" style="padding-right: 15px; vertical-align: top;">
+                <div class="section-header">Billed To</div>
+                <div class="text-bold" style="font-size: 12px; margin-bottom: 2px;">{{ order.full_name }}</div>
+                <div>{{ order.address_line }}</div>
+                <div>{{ order.city }}, {{ order.state }} - {{ order.pincode }}</div>
+                <div style="margin-top: 5px; color: #555;">Phone: {{ order.phone }}</div>
+            </td>
+
+            <td width="45%" style="vertical-align: top;">
+                <div class="section-header">Order Details</div>
+                <table class="w-100" style="font-size: 9px;">
+                    <tr>
+                        <td width="50%" style="padding: 2px;">Payment Mode:</td>
+                        <td width="50%" class="text-right text-bold">{{ order.payment_method }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px;">Payment Status:</td>
+                        <td class="text-right">
+                            {% if order.payment_status %}
+                                <span style="color: green; font-weight:bold;">PAID</span>
+                            {% else %}
+                                <span style="color: #b8860b; font-weight:bold;">PENDING</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px;">Place of Supply:</td>
+                        <td class="text-right">{{ order.state }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th width="5%" class="text-center">SN</th>
+                <th width="40%">Description</th>
+                <th width="10%" class="text-center">Purity</th>
+                <th width="10%" class="text-center">Gross Wt.</th>
+                <th width="10%" class="text-center">Net Wt.</th>
+                <th width="8%" class="text-center">Qty</th>
+                <th width="17%" class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td>
+                    <strong style="font-size: 10px;">{{ item.product.name }}</strong><br>
+                    <span style="color: #666; font-size: 8px;">SKU: {{ item.product.sku }} | HSN: 7113</span>
+                </td>
+                <td class="text-center">{{ item.product.purity }}</td>
+                <td class="text-center">{{ item.product.gross_weight|default:"-" }} g</td>
+                <td class="text-center">{{ item.product.net_weight|default:"-" }} g</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">₹{{ item.price_at_purchase }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="w-100" style="margin-top: 20px;">
+        <tr>
+            <td width="55%" style="vertical-align: top; padding-right: 20px;">
+                <div class="section-header">Terms & Conditions</div>
+                <ul style="font-size: 8px; padding-left: 15px; margin-top: 5px; color: #444;">
+                    <li>Goods once sold cannot be returned.</li>
+                    <li>Subject to Ahmedabad Jurisdiction only.</li>
+                    <li>Gold purity is certified as per BIS standards.</li>
+                </ul>
+                
+                <div style="margin-top: 15px; border: 1px dashed #b8860b; padding: 8px; background-color: #fffdf0;">
+                    <div style="font-size: 9px; color: #b8860b; font-weight: bold;">Rojesara Heritage Promise</div>
+                    <div style="font-size: 8px;">100% Hallmark Certified | Lifetime Maintenance</div>
+                </div>
+            </td>
+
+            <td width="45%" style="vertical-align: top;">
+                <table class="w-100" style="font-size: 9px;">
+                    <tr>
+                        <td width="60%" class="text-right" style="padding: 3px;">Taxable Value</td>
+                        <td width="40%" class="text-right" style="padding: 3px;">{{ taxable_value }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right" style="padding: 3px;">CGST (1.5%)</td>
+                        <td class="text-right" style="padding: 3px;">{{ cgst }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right" style="padding: 3px;">SGST (1.5%)</td>
+                        <td class="text-right" style="padding: 3px;">{{ sgst }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right" style="padding: 3px;">Shipping</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right" style="padding: 3px; color: green;">FREE</td>
+                        </tr>
+                                    </table>
+                
+                <div style="margin-top: 10px;">
+                    <table class="w-100">
+                        <tr>
+                            <td class="grand-total">GRAND TOTAL</td>
+                            <td class="grand-total text-right">₹ {{ order.total_amount }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="margin-top: 40px; text-align: right;">
+                    <div style="font-size: 9px; margin-bottom: 5px;">For, ROJESARA HERITAGE</div>
+                    <div style="border-top: 1px solid #111; display: inline-block; width: 100px;"></div>
+                    <div style="font-size: 8px;">Authorized Signatory</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        Thank you for shopping with Rojesara Heritage. Visit us at www.rojesara.com
+        <br>This is a computer generated invoice.
+    </div>
+
+</body>
+</html>

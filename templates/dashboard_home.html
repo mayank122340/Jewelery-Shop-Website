@@ -1,0 +1,93 @@
+{% extends 'dashboard_base.html' %}
+
+{% block admin_content %}
+
+<div class="flex justify-between items-center mb-10">
+    <div>
+        <h1 class="text-4xl font-serif text-onyx mb-2">Inventory Management</h1>
+        <p class="text-gray-500 italic">Overview of your current stock and collections.</p>
+    </div>
+    
+    <form method="GET" class="relative">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search by SKU or Name..." 
+               class="pl-10 pr-4 py-2 border-2 border-gray-100 rounded-full focus:border-gold outline-none text-sm w-64 transition-all">
+        <span class="absolute left-3 top-2.5 opacity-30">🔍</span>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    {% for m in metal_counts %}
+    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-gold animate-fade-in">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{{ m.metal_type }} Collection</p>
+        <h3 class="text-2xl font-serif text-onyx">{{ m.total }} <span class="text-sm font-sans text-gray-500 italic">Articles</span></h3>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden mb-12">
+    <div class="p-8 border-b border-gray-50 flex justify-between items-center">
+        <h4 class="text-xl font-serif text-onyx">Recent Inventory Feed</h4>
+        <a href="{% url 'add_stock' %}" class="bg-gold text-white px-6 py-2 rounded-full text-xs font-bold hover:bg-yellow-600 transition">+ Add New Stock</a>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50/50 border-b">
+                <tr class="text-[11px] uppercase tracking-widest text-gray-400">
+                    <th class="p-5">Product</th>
+                    <th class="p-5">SKU / ID</th>
+                    <th class="p-5">Category</th>
+                    <th class="p-5 text-center">Net Wt</th>
+                    <th class="p-5 text-center">Gross Wt</th>
+                    <th class="p-5">Charges</th>
+                    <th class="p-5 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-all">
+                    <td class="p-5 flex items-center gap-4">
+                        <img src="{{ p.image.url }}" class="w-10 h-10 rounded-lg object-cover border border-gray-100">
+                        <span class="font-medium text-onyx">{{ p.name }}</span>
+                    </td>
+                    <td class="p-5 font-mono text-xs font-bold text-gold">{{ p.sku }}</td>
+                    <td class="p-5">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ p.sub_category }}</span>
+                    </td>
+                    <td class="p-5 text-center font-medium">{{ p.net_weight }}g</td>
+                    <td class="p-5 text-center font-medium">{{ p.gross_weight }}g</td>
+                    <td class="p-5 text-gray-500 text-sm">₹{{ p.making_charges }}/g</td>
+                    <td class="p-5">
+                        <div class="flex items-center justify-end gap-3">
+                           {% if p.status == 'available' %}
+                                <a href="{% url 'mark_as_sold' p.pk %}" 
+                                   onclick="return confirm('Bhai, kya ye piece sach mein bik gaya hai?')"
+                                   class="px-3 py-1.5 rounded-lg bg-green-50 text-green-600 border border-green-100 text-[10px] font-bold uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                                    Done & Sold
+                                </a>
+                            {% else %}
+                                <span class="px-3 py-1.5 rounded-lg bg-red-100 text-red-600 border border-red-200 text-[10px] font-black uppercase tracking-widest shadow-inner">
+                                    Sold Out 🚩
+                                </span>
+                            {% endif %}
+
+                            <div class="h-6 w-[1px] bg-gray-100 mx-1"></div>
+
+                            <a href="{% url 'edit_stock' p.pk %}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white transition-all" title="Edit">
+                                ✎
+                            </a>
+                            
+                            <a href="{% url 'delete_stock' p.pk %}" 
+                               onclick="return confirm('Bhai, pakka delete karna hai?')"
+                               class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all" title="Delete">
+                                ✕
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

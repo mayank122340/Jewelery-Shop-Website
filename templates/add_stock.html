@@ -1,0 +1,163 @@
+{% extends 'dashboard_base.html' %}
+
+{% block admin_content %}
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+    <h1 class="text-3xl font-serif mb-8 text-gold border-b pb-4">✨ Elite Inventory Entry</h1>
+    
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% csrf_token %}
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold mb-2">Product Name</label>
+            <input type="text" name="name" required class="w-full p-3 border-2 rounded-xl outline-none focus:border-gold">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Metal Type</label>
+            <select name="metal_type" id="metal_type" class="w-full p-3 border-2 rounded-xl outline-none">
+                <option value="gold">Gold</option>
+                <option value="silver">Silver</option>
+                <option value="platinum">Platinum</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Purity</label>
+            <select name="purity" id="purity" class="w-full p-3 border-2 rounded-xl outline-none">
+                <option value="24k">24K</option>
+                <option value="22k">22K</option>
+                <option value="18k">18K</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Main Category</label>
+            <select id="main_cat" name="category" class="w-full p-3 border-2 rounded-xl outline-none" onchange="updateSubCat()">
+                <option value="">Select Category</option>
+                <option value="head">Head & Hair Jewellery</option>
+                <option value="ear">Ear Jewellery</option>
+                <option value="nose">Nose Jewellery</option>
+                <option value="neck">Neck & Chest Jewellery</option>
+                <option value="hand">Hand & Arm Jewellery</option>
+                <option value="waist">Waist Jewellery</option>
+                <option value="leg">Leg & Feet Jewellery</option>
+                <option value="men">Men's Gold Jewellery</option>
+                <option value="traditional">Traditional Styles</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Sub Category</label>
+            <select id="sub_cat" name="sub_category" class="w-full p-3 border-2 rounded-xl outline-none">
+                <option value="">Choose Main Category First</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Net Weight (g)</label>
+            <input type="number" step="0.001" id="net_wt" name="net_weight" oninput="calcTotal()" class="w-full p-3 border-2 rounded-xl outline-none">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Other Weight (Stone/Enamel) (g)</label>
+            <input type="number" step="0.001" id="other_wt" name="other_weight" oninput="calcTotal()" class="w-full p-3 border-2 rounded-xl outline-none" value="0">
+        </div>
+
+        <div class="md:col-span-1 bg-gray-50 p-3 rounded-xl border-dashed border-2 border-gold">
+            <label class="block text-xs font-bold text-gray-500 uppercase">Total Gross Weight (Calculated)</label>
+            <span id="total_wt" class="text-2xl font-serif text-onyx">0.000</span> <span class="text-sm">g</span>
+        </div>
+
+        <div id="huid_section" class="hidden">
+            <label class="block text-sm font-semibold mb-2 text-yellow-700 font-bold">⭐ HUID Number</label>
+            <input type="text" name="huid" class="w-full p-3 border-2 border-yellow-400 rounded-xl bg-yellow-50 outline-none" placeholder="6-digit unique code">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Making Charges (₹)</label>
+            <input type="number" name="making_charges" class="w-full p-3 border-2 rounded-xl outline-none">
+        </div>
+
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2">Other Charges (₹)</label>
+            <input type="number" step="0.01" name="other_charges" value="{{ product.other_charges|default:0 }}" 
+           class="w-full bg-gray-50 border border-gray-100 p-4 rounded-xl outline-none focus:border-gold">
+        </div>
+
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2">Discount (%)</label>
+            <input type="number" name="discount" value="{{ product.discount|default:0 }}" 
+           class="w-full bg-gray-50 border border-gray-100 p-4 rounded-xl outline-none focus:border-gold text-red-500 font-bold">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">Select Image (From Device)</label>
+            <input type="file" name="image" accept="image/*" class="w-full p-2 border-2 border-dashed rounded-xl">
+        </div>
+
+        <button type="submit" class="md:col-span-2 bg-gold text-white py-4 rounded-xl text-2xl font-serif hover:bg-yellow-600 transition shadow-lg">
+            Save Item to Inventory
+        </button>
+    </form>
+</div>
+
+<script>
+const data = {
+    'head': ['Maang Tikka', 'Matha Patti', 'Passa / Jhoomar', 'Gold Hair Chain', 'Ornamental Gold Hair Pin'],
+    'ear': ['Gold Studs', 'Gold Earrings', 'Gold Jhumka', 'Gold Bali (Hoop)', 'Chandbali', 'Karn Phool', 'Ear Cuff', 'Ear Chain'],
+    'nose': ['Gold Nose Pin', 'Gold Nose Ring (Nath)', 'Gold Septum Ring'],
+    'neck': ['Gold Necklace', 'Gold Chain', 'Gold Choker', 'Gold Pendant', 'Gold Locket', 'Gold Mangalsutra', 'Haar', 'Rani Haar', 'Gold Mala', 'Navratna / Satlada Haar'],
+    'hand': ['Gold Ring', 'Gold Bangles', 'Gold Bracelet', 'Gold Kada', 'Gold Cuff Bracelet', 'Haath Phool', 'Gold Armlet'],
+    'waist': ['Gold Waist Chain (Kamarbandh)', 'Oddiyanam'],
+    'leg': ['Gold Anklet (Payal)', 'Gold Pajeb', 'Gold Toe Ring'],
+    'men': ['Gold Chain', 'Gold Coin Chain', 'Gold Finger Ring', 'Gold Kada', 'Gold Bracelet', 'Gold ID Bracelet', 'Gold Brooch', 'Gold Tie Pin'],
+    'traditional': ['Kundan Jewellery', 'Polki Jewellery', 'Meenakari Jewellery', 'Temple Jewellery', 'Navratna Jewellery']
+};
+
+function updateSubCat() {
+    const main = document.getElementById('main_cat').value;
+    const sub = document.getElementById('sub_cat');
+    sub.innerHTML = '';
+    if (data[main]) {
+        data[main].forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item;
+            opt.innerHTML = item;
+            sub.appendChild(opt);
+        });
+    }
+}
+
+function calcTotal() {
+    const net = parseFloat(document.getElementById('net_wt').value) || 0;
+    const other = parseFloat(document.getElementById('other_wt').value) || 0;
+    document.getElementById('total_wt').innerHTML = (net + other).toFixed(3);
+}
+
+// HUID Trigger Logic
+const metalType = document.getElementById('metal_type');
+const purity = document.getElementById('purity');
+const huidSection = document.getElementById('huid_section');
+
+[metalType, purity].forEach(el => el.addEventListener('change', () => {
+    if(metalType.value === 'gold' && purity.value === '22k') {
+        huidSection.classList.remove('hidden');
+    } else {
+        huidSection.classList.add('hidden');
+    }
+}));
+</script>
+<script>
+    // Saare number inputs dhoondo
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+
+    numberInputs.forEach(function(input) {
+        input.addEventListener('keydown', function(e) {
+            // Agar key 'e', 'E', '+' ya '-' hai, toh usse roko
+            if (['e', 'E', '+', '-'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

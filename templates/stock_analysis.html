@@ -1,0 +1,74 @@
+{% extends 'dashboard_base.html' %}
+
+{% block admin_content %}
+<div class="mb-12 animate-fade-in">
+    <h1 class="text-5xl font-serif text-onyx mb-3">Stock Analysis Report</h1>
+    <p class="text-gray-500 font-light tracking-wide italic">Detailed distribution of your luxury inventory.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+    
+    <div class="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100">
+        <div class="flex items-center gap-4 mb-10">
+            <span class="text-2xl">🏛️</span>
+            <h2 class="text-2xl font-serif text-onyx">Collection Share</h2>
+        </div>
+        <div class="space-y-8">
+            {% for cat in main_cat_analysis %}
+            <div>
+                <div class="flex justify-between items-end mb-3">
+                    <span class="text-sm font-semibold text-onyx capitalize tracking-tight">{{ cat.category }}</span>
+                    <span class="text-xs font-bold text-gold">{{ cat.total }} Articles</span>
+                </div>
+                <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-gold h-full rounded-full transition-all duration-1000" style="width: {% widthratio cat.total 100 100 %}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100">
+        <div class="flex items-center gap-4 mb-10">
+            <span class="text-2xl">💎</span>
+            <h2 class="text-2xl font-serif text-onyx">Variety Breakdown</h2>
+        </div>
+        
+        <div class="space-y-8">
+            {% regroup sub_cat_analysis by category as cat_list %}
+            {% for category in cat_list %}
+            <div class="group">
+                <h3 class="text-[10px] uppercase tracking-[0.3em] text-gold font-bold mb-4 border-b border-gray-50 pb-2">
+                    {{ category.grouper }} SERIES
+                </h3>
+                <div class="flex flex-wrap gap-3">
+                    {% for item in category.list %}
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100 hover:border-gold/30 hover:bg-white transition-all duration-300">
+                        <span class="text-sm text-gray-700 font-medium italic">{{ item.sub_category }}</span>
+                        <span class="text-[10px] font-bold text-gold bg-gold/5 px-2 py-0.5 rounded-md border border-gold/10">
+                            {{ item.total }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-12 p-10 bg-[#1A1A1A] rounded-[40px] shadow-2xl flex flex-col md:flex-row justify-between items-center gap-8 border border-gray-800">
+    <div class="text-center md:text-left">
+        <h4 class="text-2xl font-serif text-[#D4AF37] mb-2">Inventory Data Finalized</h4>
+        <p class="text-gray-400 text-sm font-light">All counts are synchronized with your MySQL database.</p>
+    </div>
+    <div class="flex gap-4 w-full md:w-auto">
+        <button onclick="window.print()" class="flex-1 md:flex-none px-8 py-4 bg-transparent border border-gray-600 text-white rounded-2xl text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-gray-800 transition-all">
+            Download PDF
+        </button>
+        <a href="{% url 'add_stock' %}" class="flex-1 md:flex-none px-8 py-4 bg-[#D4AF37] text-white rounded-2xl text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-[#B8962E] transition-all text-center shadow-lg shadow-gold/10">
+            + Update Stock
+        </a>
+    </div>
+</div>
+{% endblock %}

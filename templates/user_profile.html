@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
+    <h1 class="text-4xl font-serif text-onyx mb-10 text-center">My Account</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-16 h-16 rounded-full bg-gold flex items-center justify-center text-white text-2xl font-bold">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h2 class="font-serif text-xl">{{ request.user.first_name }}</h2>
+                    <p class="text-xs text-gray-400">{{ request.user.email }}</p>
+                </div>
+            </div>
+            
+            <nav class="space-y-2">
+                <button onclick="showSection('personal')" class="w-full text-left p-3 rounded-xl hover:bg-gold/5 text-gray-600 hover:text-gold transition">👤 Personal Details</button>
+                <button onclick="showSection('orders')" class="w-full text-left p-3 rounded-xl hover:bg-gold/5 text-gray-600 hover:text-gold transition">📦 Order History</button>
+                
+            </nav>
+        </div>
+
+        <div class="md:col-span-2">
+            <div id="personal" class="profile-section bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-serif mb-6 border-b pb-4">Personal Information</h3>
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Full Name</label>
+                            <input type="text" name="name" value="{{ request.user.first_name }}" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl outline-none focus:border-gold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Mobile Number</label>
+                            <input type="text" name="mobile" value="{{ profile.mobile_number }}" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl outline-none focus:border-gold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-gray-400">Address</label>
+                        <textarea name="address" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl outline-none focus:border-gold">{{ profile.address }}</textarea>
+                    </div>
+                    <button type="submit" class="bg-onyx text-white px-8 py-3 rounded-xl text-xs uppercase tracking-widest hover:bg-gold transition shadow-lg">Save Changes</button>
+                </form>
+            </div>
+
+            <div id="orders" class="profile-section hidden bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-serif mb-6 border-b pb-4">Your Orders</h3>
+                <div class="space-y-6">
+                    {% for order in orders %}
+                    <div class="bg-gray-50 p-6 rounded-[24px] border border-gray-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order ID</p>
+                                <h4 class="font-mono text-sm text-onyx">#{{ order.order_id }}</h4>
+                                <p class="text-[9px] text-gray-400">{{ order.order_date|date:"d M, Y" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider 
+                                    {% if order.status == 'Delivered' %} bg-green-100 text-green-600 
+                                    {% elif order.status == 'Cancelled' %} bg-red-100 text-red-600
+                                    {% else %} bg-gold/10 text-gold {% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 mt-4 space-y-4">
+                            {% for item in order.items.all %}
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-lg border border-gray-100 overflow-hidden flex-shrink-0">
+                                    <img src="{{ item.product.image.url }}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-sm font-medium text-onyx">{{ item.product.name }}</p>
+                                    <p class="text-[10px] text-gray-400">Qty: {{ item.quantity }}</p>
+                                </div>
+                                <div class="text-right text-sm font-bold text-onyx">
+                                    ₹{{ item.price_at_purchase }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-dashed border-gray-300">
+                            <div>
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Paid via {{ order.payment_method }}</p>
+                                {% if order.payment_status %}
+                                    <p class="text-[8px] text-green-500 font-bold uppercase">● Payment Confirmed</p>
+                                {% else %}
+                                    <p class="text-[8px] text-yellow-600 font-bold uppercase">● Payment Pending</p>
+                                {% endif %}
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Total Amount</p>
+                                <span class="text-xl font-serif text-onyx">₹{{ order.total_amount }}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-end">
+                            <a href="{% url 'download_invoice' order.order_id %}" class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gold hover:text-white hover:bg-gold transition border border-gold px-4 py-2 rounded-lg">
+                                <span>📄</span> Download Invoice
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <div class="text-center py-20">
+                            <p class="text-gray-400 italic text-sm">Bhai, tune abhi tak kuch order nahi kiya!</p>
+                            <a href="{% url 'home' %}" class="inline-block mt-4 text-gold text-xs font-bold uppercase underline tracking-widest">Explore Collection</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="wishlist" class="profile-section hidden bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-serif mb-6 border-b pb-4">Saved Jewelry</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {% for item in wishlist %}
+                    <div class="p-2 border border-gray-50 rounded-xl hover:border-gold transition">
+                        <img src="{{ item.product.image.url }}" class="w-full h-32 object-cover rounded-lg">
+                        <p class="text-[10px] mt-2 text-center font-bold text-onyx">{{ item.product.name }}</p>
+                        <a href="{% url 'product_detail' item.product.slug %}" class="block text-[8px] text-center text-gray-400 uppercase mt-1">View Details</a>
+                    </div>
+                    {% empty %}
+                        <p class="col-span-full text-center text-gray-400 py-10">Wishlist khali hai bhai!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        document.querySelectorAll('.profile-section').forEach(section => section.classList.add('hidden'));
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+</script>
+{% endblock %}
