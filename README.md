@@ -312,4 +312,5 @@ To connect to MySQL instead of SQLite:
 
 ## 🤝 Contributors
 
-- **Mayank Rojesara** ([@mayank122340](https://github.com/mayank122340)) — Full-Stack Architecture, Dynamic Metal Pricing Engine, Database Modeling, In-Memory BI Analytics & Luxury Frontend Design
+- **Mayank Rojesara** ([@mayank122340](https://github.com/mayank122340)) — Full-Stack Architecture, Dynamic Metal Pricing Engine, Database Modeling & In-Memory BI Analytics
+- **Devanshi Trivedi** — Jewelry Catalog Architecture, Product & Order Management Systems, UI/UX Layout & Storefront Engineering
