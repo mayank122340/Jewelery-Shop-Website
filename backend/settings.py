@@ -157,3 +157,6 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')  # Yahan apna email daal
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')  # App password yahan set karo
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/auth/'
+LOGIN_REDIRECT_URL = '/'

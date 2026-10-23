@@ -71,7 +71,11 @@
                             {% for item in order.items.all %}
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-white rounded-lg border border-gray-100 overflow-hidden flex-shrink-0">
+                                    {% if item.product.image %}
                                     <img src="{{ item.product.image.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=100&h=100&fit=crop&q=80" class="w-full h-full object-cover">
+                                    {% endif %}
                                 </div>
                                 <div class="flex-grow">
                                     <p class="text-sm font-medium text-onyx">{{ item.product.name }}</p>
@@ -119,7 +123,11 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {% for item in wishlist %}
                     <div class="p-2 border border-gray-50 rounded-xl hover:border-gold transition">
+                        {% if item.product.image %}
                         <img src="{{ item.product.image.url }}" class="w-full h-32 object-cover rounded-lg">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&h=200&fit=crop&q=80" class="w-full h-32 object-cover rounded-lg">
+                        {% endif %}
                         <p class="text-[10px] mt-2 text-center font-bold text-onyx">{{ item.product.name }}</p>
                         <a href="{% url 'product_detail' item.product.slug %}" class="block text-[8px] text-center text-gray-400 uppercase mt-1">View Details</a>
                     </div>

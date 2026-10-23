@@ -73,7 +73,11 @@
                         <div class="flex justify-between items-center gap-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-lg bg-white/10 overflow-hidden">
+                                    {% if item.product.image %}
                                     <img src="{{ item.product.image.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=100&h=100&fit=crop&q=80" class="w-full h-full object-cover">
+                                    {% endif %}
                                 </div>
                                 <div class="text-[10px]">
                                     <p class="font-bold truncate w-24">{{ item.product.name }}</p>
