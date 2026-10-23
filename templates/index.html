@@ -192,7 +192,11 @@
                 <div class="min-w-[calc(100%-1rem)] md:min-w-[calc(25%-1.2rem)] max-w-[calc(100%-1rem)] md:max-w-[calc(25%-1.2rem)] bg-white rounded-[32px] border border-gray-50 shadow-sm flex-shrink-0 group snap-center">
                     
                     <div class="relative aspect-[4/5] overflow-hidden m-3 rounded-[24px] bg-[#FAF9F6]">
+                        {% if product.image %}
                         <img src="{{ product.image.url }}" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=600&fit=crop&q=80" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110">
+                        {% endif %}
                         <div class="absolute top-3 left-3 backdrop-blur-md bg-white/70 px-3 py-1.5 rounded-xl border border-white/50">
                             <p class="text-[8px] font-mono text-gray-800">{{ product.sku }}</p>
                         </div>

@@ -7,7 +7,11 @@
             
             <div class="w-full lg:w-1/2">
                 <div class="relative overflow-hidden rounded-[32px] bg-[#FAF9F6] aspect-square group">
+                    {% if product.image %}
                     <img src="{{ product.image.url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=800&fit=crop&q=80" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    {% endif %}
                     
                     <div class="absolute top-6 left-6 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-widest text-gold uppercase border border-gold/20">
                         Handcrafted Perfection
@@ -114,7 +118,11 @@
                 {% for related in related_products %}
                 <a href="{% url 'product_detail' related.slug %}" class="group">
                     <div class="aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4 relative">
+                        {% if related.image %}
                         <img src="{{ related.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=600&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                        {% endif %}
                         {% if related.price_details.has_discount %}
                             <div class="absolute top-2 right-2 bg-red-500 text-white text-[8px] px-2 py-1 rounded font-bold">SALE</div>
                         {% endif %}
